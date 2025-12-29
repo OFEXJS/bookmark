@@ -7,12 +7,12 @@ interface Bookmark {
   url: string;
   category: string;
   icon?: string;
+  bgColor?: string;
 }
 
 // 分类图标映射
 const categoryIcons: Record<string, string> = {
   all: "📚",
-  阅读: "📖",
   视频: "🎬",
   音乐: "🎵",
   开发: "💻",
@@ -20,6 +20,9 @@ const categoryIcons: Record<string, string> = {
   其他: "📁",
   资讯: "📰",
   社区: "💬",
+  环境: "🌍",
+  文档: "📖",
+  AI: "🤖",
 };
 
 // 获取分类图标
@@ -33,6 +36,7 @@ const BookmarkCard = memo(function BookmarkCard({
   url,
   category,
   icon,
+  bgColor,
 }: Bookmark) {
   const [isClicked, setIsClicked] = useState(false);
 
@@ -54,6 +58,7 @@ const BookmarkCard = memo(function BookmarkCard({
           >
             <img
               className="bookmark-logo"
+              style={{ backgroundColor: bgColor }}
               src={
                 icon ||
                 `https://www.google.com/s2/favicons?domain=${
