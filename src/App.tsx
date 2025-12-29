@@ -6,6 +6,7 @@ interface Bookmark {
   title: string;
   url: string;
   category: string;
+  icon?: string;
 }
 
 // 分类图标映射
@@ -29,6 +30,7 @@ const BookmarkCard = memo(function BookmarkCard({
   title,
   url,
   category,
+  icon,
 }: Bookmark) {
   const [isClicked, setIsClicked] = useState(false);
 
@@ -48,6 +50,21 @@ const BookmarkCard = memo(function BookmarkCard({
             className="bookmark-link"
             onClick={handleClick}
           >
+            <img
+              className="bookmark-logo"
+              src={
+                icon ||
+                `https://www.google.com/s2/favicons?domain=${
+                  new URL(url).hostname
+                }&sz=32`
+              }
+              alt={`${title} logo`}
+              loading="lazy"
+              onError={(e) => {
+                // 当favicon不可用时隐藏图片
+                (e.target as HTMLImageElement).style.display = "none";
+              }}
+            />
             {title}
           </a>
         </h3>
@@ -119,7 +136,9 @@ function App() {
             return (
               <li
                 key={category}
-                className={`category-item ${activeCategory === category ? "active" : ""}`}
+                className={`category-item ${
+                  activeCategory === category ? "active" : ""
+                }`}
                 onClick={() => setActiveCategory(category)}
               >
                 <span className="category-icon">
@@ -128,9 +147,7 @@ function App() {
                 <span className="category-text">
                   {category === "all" ? "全部书签" : category}
                 </span>
-                <span className="category-count">
-                  ({count})
-                </span>
+                <span className="category-count">({count})</span>
               </li>
             );
           })}

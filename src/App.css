@@ -200,6 +200,13 @@
   gap: 1rem;
 }
 
+/* 紧凑模式下的logo样式 */
+.bookmark-grid.compact .bookmark-logo {
+  width: 20px;
+  height: 20px;
+  margin-right: 6px;
+}
+
 @keyframes gridFadeIn {
   to {
     opacity: 1;
@@ -245,6 +252,23 @@
 .bookmark-link {
   color: #e2e8f0;
   text-decoration: none;
+  display: flex;
+  align-items: center;
+}
+
+.bookmark-logo {
+  width: 24px;
+  height: 24px;
+  margin-right: 8px;
+  border-radius: 4px;
+  object-fit: contain;
+  background-color: rgba(255, 255, 255, 0.1);
+  padding: 2px;
+  transition: transform 0.25s ease;
+}
+
+.bookmark-link:hover .bookmark-logo {
+  transform: scale(1.1);
 }
 
 .bookmark-link:hover {
