@@ -20,7 +20,7 @@ const bookmarksConfig = [
     category: "开发",
     icon: "https://developer.mozilla.org/favicon.svg",
   },
-  { id: 4, title: "知乎", url: "https://zhihu.com", category: "阅读" },
-  { id: 5, title: "掘金", url: "https://juejin.cn", category: "阅读" },
-  { id: 6, title: "GitHub", url: "https://github.com", category: "开发" },
+  { id: 6, title: "GitHub", url: "https://github.com", category: "社区" },
+  { id: 4, title: "知乎", url: "https://zhihu.com", category: "资讯" },
+  { id: 5, title: "掘金", url: "https://juejin.cn", category: "资讯" },
 ];

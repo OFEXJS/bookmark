@@ -18,6 +18,8 @@ const categoryIcons: Record<string, string> = {
   开发: "💻",
   工具: "🔧",
   其他: "📁",
+  资讯: "📰",
+  社区: "💬",
 };
 
 // 获取分类图标
