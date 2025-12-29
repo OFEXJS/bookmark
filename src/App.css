@@ -23,6 +23,14 @@
   overflow: hidden;
 }
 
+.content-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 2rem;
+}
+
 /* =======================
    GitHub 仓库侧边栏
 ======================= */
@@ -247,6 +255,7 @@
   );
   transition: margin-left 0.4s cubic-bezier(0.4, 0, 0.2, 1); /* 新增平滑过渡 */
   margin-left: 0; /* 默认不偏移 */
+  position: relative;
 }
 
 /* =======================

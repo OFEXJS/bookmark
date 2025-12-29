@@ -356,7 +356,7 @@ const App: React.FC = () => {
     const amplitudes = [20, 15, 25];
 
     // 添加粒子系统
-    const particleCount = 80;
+    const particleCount = 120;
     const particles = [];
     const particleGroup = svg.append('g').attr('class', 'particles');
 
@@ -413,7 +413,7 @@ const App: React.FC = () => {
           .curve(d3.curveBasis)(
             Array.from({length: 100}, (_, i) => ({
               x: (i / 99) * width,
-              y: height / 2 + Math.sin(i / 10 + wave.offset) * wave.amplitude
+              y: 100 + Math.sin(i / 10 + wave.offset) * wave.amplitude
             }))
           );
 
@@ -497,7 +497,8 @@ const App: React.FC = () => {
       <main className="bookmark-content" ref={contentRef}>
         {/* D3粒子动画 */}
         <svg ref={backgroundRef} className="content-animation"></svg>
-        <div className="content-header">
+       <div className="content-container">
+         <div className="content-header">
           <div className="header-left">
             <h1>
               {activeCategory === "all" ? "全部书签" : activeCategory} (
@@ -542,6 +543,7 @@ const App: React.FC = () => {
               <div className="empty-state">该分类下暂无书签</div>
             )}
           </div>
+       </div>
       </main>
 
       {/* GitHub仓库侧边栏 */}
