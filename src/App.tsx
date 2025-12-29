@@ -206,7 +206,6 @@ const GitHubRepoSidebar = () => {
   );
 };
 
-/* 书签卡片（保持不变，只微调点击动画时长） */
 const BookmarkCard = memo(function BookmarkCard({
   title,
   url,
@@ -278,6 +277,7 @@ const BookmarkCard = memo(function BookmarkCard({
   );
 });
 
+/* 书签卡片（保持不变，只微调点击动画时长） */
 const App: React.FC = () => {
   const [activeCategory, setActiveCategory] = useState('all');
   const backgroundRef = useRef<SVGSVGElement>(null);
@@ -355,6 +355,33 @@ const App: React.FC = () => {
     const speeds = [0.005, 0.003, 0.007];
     const amplitudes = [20, 15, 25];
 
+    // 添加粒子系统
+    const particleCount = 80;
+    const particles = [];
+    const particleGroup = svg.append('g').attr('class', 'particles');
+
+    // 初始化粒子
+    for (let i = 0; i < particleCount; i++) {
+      particles.push({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        radius: Math.random() * 2 + 1,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        speedX: (Math.random() - 0.5) * 0.5,
+        speedY: (Math.random() - 0.5) * 0.5,
+        opacity: Math.random() * 0.5 + 0.2
+      });
+    }
+
+    // 创建粒子元素
+    const particleElements = particleGroup.selectAll('circle')
+      .data(particles)
+      .enter()
+      .append('circle')
+      .attr('r', d => d.radius)
+      .attr('fill', d => d.color)
+      .attr('opacity', d => d.opacity);
+
     // 创建波浪路径生成器
     const createWave = (index) => {
       const wave = svg.append('path')
@@ -392,6 +419,23 @@ const App: React.FC = () => {
 
         wave.path.attr('d', pathData);
       });
+
+      // 更新粒子位置
+      particles.forEach((p, i) => {
+        p.x += p.speedX;
+        p.y += p.speedY;
+
+        // 边界检测
+        if (p.x < 0) p.x = width;
+        if (p.x > width) p.x = 0;
+        if (p.y < 0) p.y = height;
+        if (p.y > height) p.y = 0;
+      });
+
+      // 更新粒子元素
+      particleElements
+        .attr('cx', d => d.x)
+        .attr('cy', d => d.y);
 
       requestAnimationFrame(animateWave);
     };
