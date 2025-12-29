@@ -1040,6 +1040,27 @@ const config = {
       category: "工具",
       icon: "https://mastergo.com/favicon.ico",
     },
+    {
+      id: 149,
+      title: "菜鸟教程",
+      url: "https://www.runoob.com/",
+      category: "社区",
+      icon: "/icons/runoob-favicon.ico",
+    },
+    {
+      id: 150,
+      title: "W3Cschool",
+      url: "https://www.w3cschool.cn/",
+      category: "社区",
+      icon: "/icons/w3cschool-favicon.ico",
+    },
+    {
+      id: 151,
+      title: "牛客网",
+      url: "https://www.nowcoder.com/",
+      category: "社区",
+      icon: "/icons/nowcoderfavicon.ico",
+    },
   ],
   categoryIcons: {
     all: "📚",

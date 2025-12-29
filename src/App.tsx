@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useCallback, memo } from "react";
 import "./App.css";
 
+// 声明全局config变量
+declare const config: any;
+
 interface Bookmark {
   id: number;
   title: string;
@@ -101,22 +104,27 @@ function App() {
 
   const filteredBookmarks = bookmarks.filter((b) => {
     // 分类过滤
-    const categoryMatch = activeCategory === "all" || b.category === activeCategory;
+    const categoryMatch =
+      activeCategory === "all" || b.category === activeCategory;
     // 搜索过滤（忽略大小写的模糊搜索）
-    const searchMatch = searchTerm === "" || 
+    const searchMatch =
+      searchTerm === "" ||
       b.title.toLowerCase().includes(searchTerm.toLowerCase());
     // 两者都匹配才返回true
     return categoryMatch && searchMatch;
   });
 
   // 处理搜索输入变化
-  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value);
-    // 搜索时也触发动画
-    setIsAnimating(true);
-    const timer = setTimeout(() => setIsAnimating(false), 100);
-    return () => clearTimeout(timer);
-  }, []);
+  const handleSearchChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setSearchTerm(e.target.value);
+      // 搜索时也触发动画
+      setIsAnimating(true);
+      const timer = setTimeout(() => setIsAnimating(false), 100);
+      return () => clearTimeout(timer);
+    },
+    []
+  );
 
   // 清除搜索
   const clearSearch = useCallback(() => {
@@ -188,7 +196,7 @@ function App() {
                 aria-label="搜索书签"
               />
               {searchTerm && (
-                <button 
+                <button
                   className="clear-search-btn"
                   onClick={clearSearch}
                   aria-label="清除搜索"
