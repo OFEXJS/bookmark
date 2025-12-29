@@ -23,6 +23,7 @@ const categoryIcons: Record<string, string> = {
   环境: "🌍",
   文档: "📖",
   AI: "🤖",
+  笔记: "📝",
 };
 
 // 获取分类图标
