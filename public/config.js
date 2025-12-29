@@ -1017,7 +1017,7 @@ const config = {
       title: "SwitchHosts",
       url: "https://switchhosts.vercel.app/zh",
       category: "工具",
-      icon: "https://switchhosts.vercel.app/favicon.ico",
+      icon: "/icons/switchhosts-favicon.ico",
     },
     {
       id: 146,
