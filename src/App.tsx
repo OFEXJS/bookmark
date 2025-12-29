@@ -89,6 +89,7 @@ function App() {
   const [activeCategory, setActiveCategory] = useState("all");
   const [compactMode, setCompactMode] = useState(true);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
 
   // 假设你的书签数据
   const bookmarks: Bookmark[] = config?.bookmarks || [];
@@ -98,10 +99,33 @@ function App() {
     ...Array.from(new Set(bookmarks.map((b) => b.category))),
   ];
 
-  const filteredBookmarks =
-    activeCategory === "all"
-      ? bookmarks
-      : bookmarks.filter((b) => b.category === activeCategory);
+  const filteredBookmarks = bookmarks.filter((b) => {
+    // 分类过滤
+    const categoryMatch = activeCategory === "all" || b.category === activeCategory;
+    // 搜索过滤（忽略大小写的模糊搜索）
+    const searchMatch = searchTerm === "" || 
+      b.title.toLowerCase().includes(searchTerm.toLowerCase());
+    // 两者都匹配才返回true
+    return categoryMatch && searchMatch;
+  });
+
+  // 处理搜索输入变化
+  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+    // 搜索时也触发动画
+    setIsAnimating(true);
+    const timer = setTimeout(() => setIsAnimating(false), 100);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // 清除搜索
+  const clearSearch = useCallback(() => {
+    setSearchTerm("");
+    // 清除搜索时也触发动画
+    setIsAnimating(true);
+    const timer = setTimeout(() => setIsAnimating(false), 100);
+    return () => clearTimeout(timer);
+  }, []);
 
   // 分类切换时触发网格动画
   useEffect(() => {
@@ -149,10 +173,31 @@ function App() {
       {/* 主内容区 */}
       <main className="bookmark-content">
         <div className="content-header">
-          <h1>
-            {activeCategory === "all" ? "全部书签" : activeCategory} (
-            {filteredBookmarks.length})
-          </h1>
+          <div className="header-left">
+            <h1>
+              {activeCategory === "all" ? "全部书签" : activeCategory} (
+              {filteredBookmarks.length})
+            </h1>
+            <div className="search-container">
+              <input
+                type="text"
+                placeholder="搜索书签标题..."
+                value={searchTerm}
+                onChange={handleSearchChange}
+                className="search-input"
+                aria-label="搜索书签"
+              />
+              {searchTerm && (
+                <button 
+                  className="clear-search-btn"
+                  onClick={clearSearch}
+                  aria-label="清除搜索"
+                >
+                  ×
+                </button>
+              )}
+            </div>
+          </div>
 
           <button
             className={`compact-toggle ${compactMode ? "active" : ""}`}

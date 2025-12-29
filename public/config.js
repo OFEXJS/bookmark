@@ -1033,6 +1033,13 @@ const config = {
       category: "文档",
       icon: "https://www.babeljs.cn/img/favicon.png",
     },
+    {
+      id: 148,
+      title: "MasterGo",
+      url: "https://mastergo.com/",
+      category: "工具",
+      icon: "https://mastergo.com/favicon.ico",
+    },
   ],
   categoryIcons: {
     all: "📚",
