@@ -8,7 +8,23 @@ interface Bookmark {
   category: string;
 }
 
-/* 书签卡片组件（去掉 hover state，纯 CSS） */
+// 分类图标映射
+const categoryIcons: Record<string, string> = {
+  all: "📚",
+  阅读: "📖",
+  视频: "🎬",
+  音乐: "🎵",
+  开发: "💻",
+  工具: "🔧",
+  其他: "📁",
+};
+
+// 获取分类图标
+const getCategoryIcon = (category: string): string => {
+  return categoryIcons[category] || "📁";
+};
+
+/* 书签卡片（保持不变，只微调点击动画时长） */
 const BookmarkCard = memo(function BookmarkCard({
   title,
   url,
@@ -18,11 +34,11 @@ const BookmarkCard = memo(function BookmarkCard({
 
   const handleClick = useCallback(() => {
     setIsClicked(true);
-    setTimeout(() => setIsClicked(false), 180);
+    setTimeout(() => setIsClicked(false), 150); // 稍微快一点，更灵敏
   }, []);
 
   return (
-    <article className={`card bookmark-item ${isClicked ? "clicked" : ""}`}>
+    <article className={`card ${isClicked ? "clicked" : ""}`}>
       <div className="card-header">
         <h3 className="bookmark-title">
           <a
@@ -38,7 +54,10 @@ const BookmarkCard = memo(function BookmarkCard({
       </div>
 
       <div className="card-body">
-        <span className="category-tag">{category}</span>
+        <span className="category-tag">
+          <span className="category-tag-icon">{getCategoryIcon(category)}</span>
+          {category}
+        </span>
         <a
           href={url}
           target="_blank"
@@ -59,28 +78,11 @@ const BookmarkCard = memo(function BookmarkCard({
 
 function App() {
   const [activeCategory, setActiveCategory] = useState("all");
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [compactMode, setCompactMode] = useState(true);
   const [isAnimating, setIsAnimating] = useState(false);
 
-  const bookmarks: Bookmark[] = [
-    { id: 1, title: "React 文档", url: "https://react.dev", category: "开发" },
-    {
-      id: 2,
-      title: "TypeScript 文档",
-      url: "https://typescriptlang.org",
-      category: "开发",
-    },
-    {
-      id: 3,
-      title: "MDN Web Docs",
-      url: "https://developer.mozilla.org",
-      category: "开发",
-    },
-    { id: 4, title: "知乎", url: "https://zhihu.com", category: "阅读" },
-    { id: 5, title: "掘金", url: "https://juejin.cn", category: "阅读" },
-    { id: 6, title: "GitHub", url: "https://github.com", category: "开发" },
-  ];
+  // 假设你的书签数据
+  const bookmarks: Bookmark[] = bookmarksConfig;
 
   const categories = [
     "all",
@@ -92,59 +94,51 @@ function App() {
       ? bookmarks
       : bookmarks.filter((b) => b.category === activeCategory);
 
-  /* 分类切换动画节流 */
+  // 分类切换时触发网格动画
   useEffect(() => {
     setIsAnimating(true);
-    const timer = setTimeout(() => setIsAnimating(false), 400);
+    const timer = setTimeout(() => setIsAnimating(false), 100); // 立即开始动画
     return () => clearTimeout(timer);
   }, [activeCategory]);
 
   return (
     <div className="app-container">
       {/* 侧边栏 */}
-      <aside className={`sidebar ${sidebarCollapsed ? "collapsed" : ""}`}>
+      <aside className="sidebar">
         <div className="sidebar-header">
-          <h2 className={sidebarCollapsed ? "hidden" : ""}>书签分类</h2>
-          <button
-            className="sidebar-toggle"
-            onClick={() => setSidebarCollapsed((v) => !v)}
-          >
-            {sidebarCollapsed ? "›" : "‹"}
-          </button>
+          <h2>书签分类</h2>
         </div>
 
         <ul className="category-list">
-          {categories.map((category) => (
-            <li
-              key={category}
-              className={`category-item ${
-                activeCategory === category ? "active" : ""
-              } ${sidebarCollapsed ? "collapsed" : ""}`}
-              onClick={() => setActiveCategory(category)}
-            >
-              <span
-                className={`category-text ${sidebarCollapsed ? "hidden" : ""}`}
+          {categories.map((category) => {
+            const count =
+              category === "all"
+                ? bookmarks.length
+                : bookmarks.filter((b) => b.category === category).length;
+
+            return (
+              <li
+                key={category}
+                className={`category-item ${activeCategory === category ? "active" : ""}`}
+                onClick={() => setActiveCategory(category)}
               >
-                {category === "all" ? "全部书签" : category}
-              </span>
-              <span
-                className={`category-count ${sidebarCollapsed ? "hidden" : ""}`}
-              >
-                (
-                {category === "all"
-                  ? bookmarks.length
-                  : bookmarks.filter((b) => b.category === category).length}
-                )
-              </span>
-            </li>
-          ))}
+                <span className="category-icon">
+                  {getCategoryIcon(category)}
+                </span>
+                <span className="category-text">
+                  {category === "all" ? "全部书签" : category}
+                </span>
+                <span className="category-count">
+                  ({count})
+                </span>
+              </li>
+            );
+          })}
         </ul>
       </aside>
 
-      {/* 内容区 */}
-      <main
-        className={`bookmark-content ${sidebarCollapsed ? "expanded" : ""}`}
-      >
+      {/* 主内容区 */}
+      <main className="bookmark-content">
         <div className="content-header">
           <h1>
             {activeCategory === "all" ? "全部书签" : activeCategory} (
@@ -154,6 +148,7 @@ function App() {
           <button
             className={`compact-toggle ${compactMode ? "active" : ""}`}
             onClick={() => setCompactMode((v) => !v)}
+            aria-label="切换紧凑/正常视图"
           >
             {compactMode ? "🌐" : "📋"}
           </button>
@@ -164,7 +159,7 @@ function App() {
             isAnimating ? "fade-in" : ""
           }`}
         >
-          {filteredBookmarks.length ? (
+          {filteredBookmarks.length > 0 ? (
             filteredBookmarks.map((b) => <BookmarkCard key={b.id} {...b} />)
           ) : (
             <div className="empty-state">该分类下暂无书签</div>
