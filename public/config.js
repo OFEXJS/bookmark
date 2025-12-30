@@ -1196,6 +1196,13 @@ const config = {
       category: "工具",
       icon: "https://pnpm.io/zh/img/favicon.png",
     },
+    {
+      id: 171,
+      title: "OPM",
+      url: "https://opm.openresty.org/",
+      category: "工具",
+      icon: "https://openresty.org/favicon.ico",
+    },
   ],
   categoryIcons: {
     all: "📚",
