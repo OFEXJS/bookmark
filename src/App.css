@@ -436,7 +436,7 @@
 }
 
 .card:hover {
-  transform: translate3d(0, -6px, 0);
+  /* transform: translate3d(0, -6px, 0); */
   box-shadow: 0 6px 16px rgba(129, 140, 248, 0.2); /* 减小阴影范围提升稳定性 */
   border-color: rgba(129, 140, 248, 0.65);
 }
