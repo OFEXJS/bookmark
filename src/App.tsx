@@ -692,6 +692,7 @@ const App: React.FC = () => {
                 onClick={toggleTranslateModal}
                 ref={translateIconRef}
                 aria-label="打开翻译工具"
+                title="打开翻译工具"
               >
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
