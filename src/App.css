@@ -393,7 +393,7 @@
 }
 
 /* 百度图片图标样式 */
-.baidu-icon-image {
+.baidu-icon-image, .google-icon-image {
   position: absolute;
   left: 0.5rem;
   top: 50%;
@@ -405,6 +405,11 @@
 
 /* 为百度搜索框添加左侧内边距以容纳图标 */
 .baidu-search-container .search-input {
+  padding-left: 3rem;
+}
+
+/* 为Google搜索框添加左侧内边距以容纳图标 */
+.google-search-container .search-input {
   padding-left: 3rem;
 }
 

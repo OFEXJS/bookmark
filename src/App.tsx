@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef, useCallback, memo } from "react";
 import "./App.css";
 import * as d3 from "d3";
+import googleIcon from "./assets/google-favicon.ico";
+
 
 // 声明全局config变量
 declare const config: any;
@@ -298,6 +300,7 @@ const App: React.FC = () => {
   const [isAnimating, setIsAnimating] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [baiduSearchTerm, setBaiduSearchTerm] = useState("");
+  const [googleSearchTerm, setGoogleSearchTerm] = useState("");
 
   // 处理百度搜索
   const handleBaiduSearch = (e: React.FormEvent) => {
@@ -306,6 +309,16 @@ const App: React.FC = () => {
       const encodedQuery = encodeURIComponent(baiduSearchTerm);
       window.open(`https://www.baidu.com/s?wd=${encodedQuery}`, "_blank");
       setBaiduSearchTerm(""); // 清空搜索框
+    }
+  };
+
+  // 处理Google搜索
+  const handleGoogleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (googleSearchTerm.trim()) {
+      const encodedQuery = encodeURIComponent(googleSearchTerm);
+      window.open(`https://www.google.com/search?q=${encodedQuery}`, "_blank");
+      setGoogleSearchTerm(""); // 清空搜索框
     }
   };
 
@@ -582,6 +595,31 @@ const App: React.FC = () => {
                   type="submit"
                   className="search-submit-btn"
                   aria-label="百度搜索"
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                  </svg>
+                </button>
+              </form>
+              <form className="search-container google-search-container" onSubmit={handleGoogleSearch}>
+                <img
+                  src={googleIcon}
+                  alt="Google图标"
+                  className="google-icon-image"
+                />
+                <input
+                  type="text"
+                  placeholder="Google搜索..."
+                  value={googleSearchTerm}
+                  onChange={(e) => setGoogleSearchTerm(e.target.value)}
+                  className="search-input"
+                  aria-label="Google搜索"
+                />
+                <button
+                  type="submit"
+                  className="search-submit-btn"
+                  aria-label="Google搜索"
                 >
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <circle cx="11" cy="11" r="8"></circle>
