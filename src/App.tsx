@@ -297,6 +297,17 @@ const App: React.FC = () => {
   const [compactMode, setCompactMode] = useState(true);
   const [isAnimating, setIsAnimating] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [baiduSearchTerm, setBaiduSearchTerm] = useState("");
+
+  // 处理百度搜索
+  const handleBaiduSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (baiduSearchTerm.trim()) {
+      const encodedQuery = encodeURIComponent(baiduSearchTerm);
+      window.open(`https://www.baidu.com/s?wd=${encodedQuery}`, "_blank");
+      setBaiduSearchTerm(""); // 清空搜索框
+    }
+  };
 
   // 假设你的书签数据
   const bookmarks: Bookmark[] = config?.bookmarks || [];
@@ -528,11 +539,12 @@ const App: React.FC = () => {
         <svg ref={backgroundRef} className="content-animation"></svg>
         <div className="content-container">
           <div className="content-header">
-            <div className="header-left">
-              <h1>
-                {activeCategory === "all" ? "全部书签" : activeCategory} (
-                {filteredBookmarks.length})
-              </h1>
+          <div className="header-left">
+            <h1>
+              {activeCategory === "all" ? "全部书签" : activeCategory} (
+              {filteredBookmarks.length})
+            </h1>
+            <div className="search-boxes">
               <div className="search-container">
                 <input
                   type="text"
@@ -552,7 +564,30 @@ const App: React.FC = () => {
                   </button>
                 )}
               </div>
+              <form className="search-container baidu-search-container" onSubmit={handleBaiduSearch}>
+                <img
+                  src="https://www.baidu.com/favicon.ico"
+                  alt="百度图标"
+                  className="baidu-icon-image"
+                />
+                <input
+                  type="text"
+                  placeholder="百度搜索..."
+                  value={baiduSearchTerm}
+                  onChange={(e) => setBaiduSearchTerm(e.target.value)}
+                  className="search-input"
+                  aria-label="百度搜索"
+                />
+                <button
+                  type="submit"
+                  className="search-submit-btn"
+                  aria-label="百度搜索"
+                >
+                  🔍
+                </button>
+              </form>
             </div>
+          </div>
 
             <button
               className={`compact-toggle ${compactMode ? "active" : ""}`}
