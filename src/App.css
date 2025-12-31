@@ -744,6 +744,181 @@
   }
 }
 
+/* =======================
+   翻译功能
+======================= */
+/* 翻译图标按钮样式 */
+.translate-icon-btn {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  border: 1px solid rgba(129, 140, 248, 0.4);
+  background: rgba(129, 140, 248, 0.25);
+  color: #e2e8f0;
+  cursor: pointer;
+  font-size: 1.2rem;
+  transition: 
+    background-color 0.25s ease,
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  margin-left: 0.5rem;
+}
+
+.translate-icon-btn:hover {
+  background: rgba(129, 140, 248, 0.45);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(129, 140, 248, 0.3);
+}
+
+.translate-icon-btn:active {
+  transform: translateY(0);
+}
+
+/* 翻译弹框样式 */
+.translate-modal {
+  position: fixed;
+  top: 100px;
+  right: 100px;
+  width: 1600px;
+  height: 960px;
+  background: rgba(30, 41, 59, 0.95);
+  backdrop-filter: blur(18px);
+  border-radius: 16px;
+  border: 1px solid rgba(129, 140, 248, 0.3);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 翻译弹框头部（拖拽区域） */
+.translate-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  background: rgba(129, 140, 248, 0.1);
+  border-bottom: 1px solid rgba(129, 140, 248, 0.2);
+  cursor: move;
+  user-select: none;
+}
+
+.translate-modal-header h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #e2e8f0;
+}
+
+.translate-modal-close {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(129, 140, 248, 0.25);
+  color: #e2e8f0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: 
+    background-color 0.25s ease,
+    transform 0.25s ease;
+}
+
+.translate-modal-close:hover {
+  background: rgba(129, 140, 248, 0.4);
+  transform: scale(1.1);
+}
+
+/* 翻译弹框Tab切换 */
+.translate-modal-tabs {
+  display: flex;
+  border-bottom: 1px solid rgba(129, 140, 248, 0.2);
+}
+
+.translate-modal-tab {
+  flex: 1;
+  padding: 0.9rem 1.2rem;
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: 
+    background-color 0.25s ease,
+    color 0.25s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.translate-modal-tab:hover {
+  background: rgba(129, 140, 248, 0.1);
+  color: #c7d2fe;
+}
+
+.translate-modal-tab.active {
+  background: rgba(129, 140, 248, 0.15);
+  color: #818cf8;
+  border-bottom: 2px solid #818cf8;
+}
+
+.tab-icon {
+  width: 18px;
+  height: 18px;
+  vertical-align: middle;
+}
+
+/* 翻译弹框内容区域 */
+.translate-modal-content {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+}
+
+.translate-modal-content iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: white;
+}
+
+.google-translate-container {
+  width: 100%;
+  height: 100%;
+  background: white;
+}
+
+/* 调整谷歌翻译组件的样式 */
+#google_translate_element {
+  width: 100%;
+  height: 100%;
+}
+
+#google_translate_element select {
+  margin: 10px;
+  padding: 5px;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .translate-modal {
+    width: 90%;
+    height: 70vh;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+}
+
 
 
 

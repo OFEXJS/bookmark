@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback, memo } from "react";
 import "./App.css";
 import * as d3 from "d3";
 import googleIcon from "./assets/google-favicon.ico";
+import youdaoIcon from "./assets/youdao-favicon.png";
 
 
 // 声明全局config变量
@@ -301,6 +302,12 @@ const App: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [baiduSearchTerm, setBaiduSearchTerm] = useState("");
   const [googleSearchTerm, setGoogleSearchTerm] = useState("");
+  const [showTranslateModal, setShowTranslateModal] = useState(false);
+  const [activeTranslateTab, setActiveTranslateTab] = useState("baidu");
+  const translateModalRef = useRef<HTMLDivElement>(null);
+  const translateIconRef = useRef<HTMLButtonElement>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
 
   // 处理百度搜索
   const handleBaiduSearch = (e: React.FormEvent) => {
@@ -362,6 +369,59 @@ const App: React.FC = () => {
     const timer = setTimeout(() => setIsAnimating(false), 100);
     return () => clearTimeout(timer);
   }, []);
+
+  // 翻译弹框显示/隐藏处理
+  const toggleTranslateModal = () => {
+    setShowTranslateModal(!showTranslateModal);
+  };
+
+  // 翻译弹框拖拽功能
+  const handleDragStart = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!translateModalRef.current) return;
+    
+    setIsDragging(true);
+    const rect = translateModalRef.current.getBoundingClientRect();
+    setDragOffset({
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top
+    });
+  };
+
+  const handleDrag = (e: MouseEvent) => {
+    if (!isDragging || !translateModalRef.current) return;
+    
+    const newX = e.clientX - dragOffset.x;
+    const newY = e.clientY - dragOffset.y;
+    
+    // 确保弹框不会超出视口
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+    const modalWidth = translateModalRef.current.offsetWidth;
+    const modalHeight = translateModalRef.current.offsetHeight;
+    
+    const finalX = Math.max(0, Math.min(newX, viewportWidth - modalWidth));
+    const finalY = Math.max(0, Math.min(newY, viewportHeight - modalHeight));
+    
+    translateModalRef.current.style.left = `${finalX}px`;
+    translateModalRef.current.style.top = `${finalY}px`;
+  };
+
+  const handleDragEnd = () => {
+    setIsDragging(false);
+  };
+
+  // 添加拖拽事件监听
+  useEffect(() => {
+    if (isDragging) {
+      document.addEventListener('mousemove', handleDrag);
+      document.addEventListener('mouseup', handleDragEnd);
+    }
+    
+    return () => {
+      document.removeEventListener('mousemove', handleDrag);
+      document.removeEventListener('mouseup', handleDragEnd);
+    };
+  }, [isDragging, dragOffset]);
 
   // 分类切换时触发网格动画
   useEffect(() => {
@@ -627,6 +687,18 @@ const App: React.FC = () => {
                   </svg>
                 </button>
               </form>
+              <button 
+                className="translate-icon-btn"
+                onClick={toggleTranslateModal}
+                ref={translateIconRef}
+                aria-label="打开翻译工具"
+              >
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                  <polyline points="2 17 12 22 22 17"></polyline>
+                  <polyline points="2 12 12 17 22 12"></polyline>
+                </svg>
+              </button>
             </div>
           </div>
 
@@ -655,6 +727,57 @@ const App: React.FC = () => {
 
       {/* GitHub仓库侧边栏 */}
       <GitHubRepoSidebar />
+
+      {/* 翻译弹框 */}
+      {showTranslateModal && (
+        <div className="translate-modal" ref={translateModalRef}>
+          <div className="translate-modal-header" onMouseDown={handleDragStart}>
+            <h3>翻译工具</h3>
+            <button 
+              className="translate-modal-close" 
+              onClick={toggleTranslateModal}
+              aria-label="关闭翻译工具"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          </div>
+          <div className="translate-modal-tabs">
+            <button 
+              className={`translate-modal-tab ${activeTranslateTab === "baidu" ? "active" : ""}`}
+              onClick={() => setActiveTranslateTab("baidu")}
+            >
+              <img src="https://www.baidu.com/favicon.ico" alt="百度翻译" className="tab-icon" />
+              百度翻译
+            </button>
+            <button 
+              className={`translate-modal-tab ${activeTranslateTab === "youdao" ? "active" : ""}`}
+              onClick={() => setActiveTranslateTab("youdao")}
+            >
+              <img src={youdaoIcon} alt="有道翻译" className="tab-icon" />
+              有道翻译
+            </button>
+          </div>
+          <div className="translate-modal-content">
+            {activeTranslateTab === "youdao" && (
+              <iframe 
+                src="https://fanyi.youdao.com/#/AITranslate?keyfrom=fanyiweb_tab" 
+                title="有道翻译"
+                frameBorder="0"
+              ></iframe>
+            )}
+            {activeTranslateTab === "baidu" && (
+              <iframe 
+                src="https://fanyi.baidu.com/" 
+                title="百度翻译"
+                frameBorder="0"
+              ></iframe>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
