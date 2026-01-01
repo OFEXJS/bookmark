@@ -1228,9 +1228,16 @@ const config = {
       id: 175,
       title: "Go 语言文档",
       url: "https://go.dev/learn/",
-      category: "工具",
+      category: "社区",
       icon: "https://go.dev/images/favicon-gopher.svg",
     },
+    {
+      id: 176,
+      title: "易语言",
+      url: "https://www.dywt.com.cn/index.htm",
+      category: "社区",
+      icon: "https://www.dywt.com.cn/images/e.ico",
+    }
   ],
   categoryIcons: {
     all: "📚",
