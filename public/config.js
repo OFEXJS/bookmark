@@ -1223,7 +1223,14 @@ const config = {
       url: "https://brew.sh/",
       category: "工具",
       icon: "https://brew.sh/assets/img/homebrew.svg",
-    }
+    },
+    {
+      id: 175,
+      title: "Go 语言文档",
+      url: "https://go.dev/learn/",
+      category: "工具",
+      icon: "https://go.dev/images/favicon-gopher.svg",
+    },
   ],
   categoryIcons: {
     all: "📚",
