@@ -1251,6 +1251,13 @@ const config = {
       url: "https://swagger.io/",
       category: "工具",
       icon: "https://static1.smartbear.co/swagger/media/assets/swagger_fav.png",
+    },
+    {
+      id: 179,
+      title: "SQL编辑器",
+      url: "https://zhengjialux.github.io/Entry/SQLSyntax/",
+      category: "工具",
+      icon: "https://zhengjialux.github.io/Entry/SQLSyntax/favicon.svg",
     }
   ],
   categoryIcons: {
