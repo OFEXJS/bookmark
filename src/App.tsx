@@ -65,9 +65,9 @@ const GitHubRepoSidebar = () => {
   const [mode, setMode] = useState<"hot" | "search">("hot");
   
   // 我们需要监听侧边栏的滚动，而不是仓库列表本身
-  const sidebarRef = useRef<HTMLAsideElement>(null);
+  const sidebarRef = useRef<HTMLDivElement>(null);
   // 搜索防抖定时器ref
-  const searchDebounceRef = useRef<NodeJS.Timeout | null>(null);
+  const searchDebounceRef = useRef<number | null>(null);
 
   const languageColors: Record<string, string> = {
     JavaScript: "#f1e05a",
@@ -213,6 +213,8 @@ const GitHubRepoSidebar = () => {
       if (loadingMore || !hasMore) return;
 
       const element = sidebarRef.current;
+      if (!element) return;
+      
       const { scrollTop, scrollHeight, clientHeight } = element;
 
       // 当滚动到底部附近（距离底部50px）时触发加载更多
