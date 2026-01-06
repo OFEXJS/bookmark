@@ -58,161 +58,148 @@ const getCategoryIcon = (category: string): string => {
 const GitHubRepoSidebar = () => {
   const [repos, setRepos] = useState<GitHubRepo[]>([]);
   const [loading, setLoading] = useState(true);
+  const [keyword, setKeyword] = useState("");
+  const [mode, setMode] = useState<"hot" | "search">("hot");
 
-  // 编程语言颜色映射
   const languageColors: Record<string, string> = {
     JavaScript: "#f1e05a",
     TypeScript: "#2b7489",
     Python: "#3572A5",
-    Java: "#b07219",
-    C: "#555555",
-    "C++": "#f34b7d",
-    "C#": "#178600",
     Go: "#00ADD8",
     Rust: "#dea584",
-    Ruby: "#701516",
-    PHP: "#4F5D95",
-    Swift: "#ffac45",
-    Kotlin: "#A97BFF",
-    Dart: "#00B4AB",
+    Java: "#b07219",
     HTML: "#e34c26",
     CSS: "#563d7c",
-    Shell: "#89e051",
-    Scala: "#c22d40",
-    R: "#198CE7",
   };
 
-  // 获取GitHub热门仓库
-  useEffect(() => {
-    const fetchGitHubRepos = async () => {
-      try {
-        setLoading(true);
+  const fetchRepos = async (url: string) => {
+    try {
+      setLoading(true);
+      const res = await fetch(url, {
+        // headers: {
+        //   Authorization: `Bearer`,
+        // },
+      });
+      if (!res.ok) throw new Error("GitHub API error");
+      const data = await res.json();
 
-        // 使用GitHub API搜索热门仓库（使用stars排序，获取星标数最多的仓库）
-        // 注意：GitHub API有速率限制，未认证请求每小时最多60次
-        const response = await fetch(
-          "https://api.github.com/search/repositories?q=stars:>20000+sort:stars&per_page=20",
-          {
-            headers: {
-              Authorization: `Bearer`,
-            },
-          }
-        );
+      const list: GitHubRepo[] = data.items.map((item: any) => ({
+        id: item.id,
+        name: item.name,
+        full_name: item.full_name,
+        description: item.description,
+        html_url: item.html_url,
+        stargazers_count: item.stargazers_count,
+        language: item.language,
+        language_color: item.language
+          ? languageColors[item.language]
+          : undefined,
+      }));
 
-        if (!response.ok) {
-          throw new Error(`GitHub API error: ${response.status}`);
-        }
+      setRepos(list);
+    } catch (e) {
+      console.error(e);
+      setRepos([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-        const data = await response.json();
+  /* ====== 随机热门仓库（不重复的关键）====== */
+  const fetchHotRepos = () => {
+    const days = Math.floor(Math.random() * 365) + 30;
+    const d = new Date();
+    d.setDate(d.getDate() - days);
+    const since = d.toISOString().split("T")[0];
 
-        // 处理API响应，添加语言颜色
-        const formattedRepos: GitHubRepo[] = data.items.map((item: any) => ({
-          id: item.id,
-          name: item.name,
-          full_name: item.full_name,
-          description: item.description,
-          html_url: item.html_url,
-          stargazers_count: item.stargazers_count,
-          language: item.language,
-          language_color: item.language
-            ? languageColors[item.language]
-            : undefined,
-        }));
-
-        setRepos(formattedRepos);
-      } catch (err) {
-        console.error("Failed to fetch GitHub repos:", err);
-
-        // 出错时使用简化的模拟数据
-        const fallbackRepos: GitHubRepo[] = [
-          {
-            id: 1,
-            name: "react",
-            full_name: "facebook/react",
-            description:
-              "React.js - A JavaScript library for building user interfaces.",
-            html_url: "https://github.com/facebook/react",
-            stargazers_count: 224000,
-            language: "JavaScript",
-            language_color: languageColors.JavaScript,
-          },
-          {
-            id: 2,
-            name: "vue",
-            full_name: "vuejs/vue",
-            description: "Vue.js - The Progressive JavaScript Framework",
-            html_url: "https://github.com/vuejs/vue",
-            stargazers_count: 204000,
-            language: "JavaScript",
-            language_color: languageColors.JavaScript,
-          },
-          {
-            id: 3,
-            name: "typescript",
-            full_name: "microsoft/TypeScript",
-            description: "TypeScript - TypeScript is a superset of JavaScript",
-            html_url: "https://github.com/microsoft/TypeScript",
-            stargazers_count: 108000,
-            language: "TypeScript",
-            language_color: languageColors.TypeScript,
-          },
-        ];
-
-        setRepos(fallbackRepos);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchGitHubRepos();
-  }, []);
-
-  if (loading) {
-    return (
-      <aside className="github-sidebar">
-        <h2>GitHub热门仓库</h2>
-        <div className="github-loading">加载中...</div>
-      </aside>
+    fetchRepos(
+      `https://api.github.com/search/repositories?q=created:>${since}+stars:>500&sort=stars&order=desc&per_page=20`
     );
-  }
+  };
+
+  /* ====== 搜索 ====== */
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!keyword.trim()) return;
+
+    setMode("search");
+    fetchRepos(
+      `https://api.github.com/search/repositories?q=${encodeURIComponent(
+        keyword
+      )}&sort=stars&order=desc&per_page=20`
+    );
+  };
+
+  useEffect(() => {
+    fetchHotRepos();
+  }, []);
 
   return (
     <aside className="github-sidebar">
-      <h2>GitHub热门仓库</h2>
-      <ul className="github-repo-list">
-        {repos.map((repo) => (
-          <li key={repo.id} className="github-repo-item">
-            <a
-              href={repo.html_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="github-repo-title"
-              title={repo.full_name}
-            >
-              {repo.full_name}
-            </a>
-            {repo.description && (
-              <p className="github-repo-description">{repo.description}</p>
-            )}
-            <div className="github-repo-meta">
-              <span className="github-repo-language">
-                {repo.language && (
-                  <>
-                    <span
-                      className="github-repo-language-color"
-                      style={{ backgroundColor: repo.language_color }}
-                    />
-                    {repo.language}
-                  </>
-                )}
-              </span>
-              <span className="github-repo-stars">
-                {repo.stargazers_count.toLocaleString()}
-              </span>
-            </div>
-          </li>
-        ))}
-      </ul>
+      <h2>GitHub 仓库</h2>
+
+      <form onSubmit={handleSearch} className="github-search">
+        <input
+          className="search-input"
+          placeholder="搜索仓库..."
+          value={keyword}
+          onChange={(e) => setKeyword(e.target.value)}
+        />
+      </form>
+
+      {mode === "search" && (
+        <button
+          className="github-back-btn"
+          onClick={() => {
+            setKeyword("");
+            setMode("hot");
+            fetchHotRepos();
+          }}
+        >
+          ← 返回热门
+        </button>
+      )}
+
+      {loading ? (
+        <div className="github-loading">加载中...</div>
+      ) : (
+        <ul className="github-repo-list">
+          {repos.map((repo) => (
+            <li key={repo.id} className="github-repo-item">
+              <a
+                href={repo.html_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="github-repo-title"
+                title={repo.full_name}
+              >
+                {repo.full_name}
+              </a>
+              {repo.description && (
+                <p className="github-repo-description">
+                  {repo.description}
+                </p>
+              )}
+              <div className="github-repo-meta">
+                <span className="github-repo-language">
+                  {repo.language && (
+                    <>
+                      <span
+                        className="github-repo-language-color"
+                        style={{ background: repo.language_color }}
+                      />
+                      {repo.language}
+                    </>
+                  )}
+                </span>
+                <span className="github-repo-stars">
+                  {repo.stargazers_count.toLocaleString()}
+                </span>
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
     </aside>
   );
 };

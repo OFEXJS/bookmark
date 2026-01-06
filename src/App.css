@@ -919,9 +919,20 @@
   }
 }
 
+.github-search {
+  margin-bottom: 16px;
+}
 
+.github-back-btn {
+  margin-bottom: 1rem;
+  background: rgba(129, 140, 248, 0.25);
+  border: none;
+  color: #e2e8f0;
+  padding: 0.4rem 0.8rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
 
-
-
-
-
+.github-back-btn:hover {
+  background: rgba(129, 140, 248, 0.45);
+}
