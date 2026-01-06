@@ -66,6 +66,8 @@ const GitHubRepoSidebar = () => {
   
   // 我们需要监听侧边栏的滚动，而不是仓库列表本身
   const sidebarRef = useRef<HTMLAsideElement>(null);
+  // 搜索防抖定时器ref
+  const searchDebounceRef = useRef<NodeJS.Timeout | null>(null);
 
   const languageColors: Record<string, string> = {
     JavaScript: "#f1e05a",
@@ -182,17 +184,25 @@ const GitHubRepoSidebar = () => {
     e.preventDefault();
     if (!keyword.trim()) return;
 
-    setMode("search");
-    // 重置页码和加载更多状态
-    setPage(1);
-    setHasMore(true);
-    setRepos([]);
-    
-    fetchRepos(
-      `https://api.github.com/search/repositories?q=${encodeURIComponent(
-        keyword
-      )}&sort=stars&order=desc&per_page=20`
-    );
+    // 清除之前的定时器
+    if (searchDebounceRef.current) {
+      clearTimeout(searchDebounceRef.current);
+    }
+
+    // 设置3秒防抖定时器
+    searchDebounceRef.current = setTimeout(() => {
+      setMode("search");
+      // 重置页码和加载更多状态
+      setPage(1);
+      setHasMore(true);
+      setRepos([]);
+      
+      fetchRepos(
+        `https://api.github.com/search/repositories?q=${encodeURIComponent(
+          keyword
+        )}&sort=stars&order=desc&per_page=20`
+      );
+    }, 300);
   };
 
   // 滚动监听，实现下拉加载更多
@@ -221,6 +231,13 @@ const GitHubRepoSidebar = () => {
 
   useEffect(() => {
     fetchHotRepos();
+    
+    // 组件卸载时清除防抖定时器
+    return () => {
+      if (searchDebounceRef.current) {
+        clearTimeout(searchDebounceRef.current);
+      }
+    };
   }, []);
 
   return (
