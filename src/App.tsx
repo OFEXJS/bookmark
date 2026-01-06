@@ -58,8 +58,14 @@ const getCategoryIcon = (category: string): string => {
 const GitHubRepoSidebar = () => {
   const [repos, setRepos] = useState<GitHubRepo[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
   const [keyword, setKeyword] = useState("");
   const [mode, setMode] = useState<"hot" | "search">("hot");
+  
+  // 我们需要监听侧边栏的滚动，而不是仓库列表本身
+  const sidebarRef = useRef<HTMLAsideElement>(null);
 
   const languageColors: Record<string, string> = {
     JavaScript: "#f1e05a",
@@ -72,9 +78,44 @@ const GitHubRepoSidebar = () => {
     CSS: "#563d7c",
   };
 
-  const fetchRepos = async (url: string) => {
+  // 加载更多仓库的函数
+  const loadMoreRepos = async () => {
+    if (!hasMore || loadingMore) return;
+
+    setLoadingMore(true);
     try {
-      setLoading(true);
+      // 根据当前模式决定加载热门还是搜索结果
+      if (mode === "hot") {
+        const days = Math.floor(Math.random() * 365) + 30;
+        const d = new Date();
+        d.setDate(d.getDate() - days);
+        const since = d.toISOString().split("T")[0];
+
+        await fetchRepos(
+          `https://api.github.com/search/repositories?q=created:>${since}+stars:>500&sort=stars&order=desc&per_page=20&page=${page + 1}`,
+          true
+        );
+      } else {
+        await fetchRepos(
+          `https://api.github.com/search/repositories?q=${encodeURIComponent(
+            keyword
+          )}&sort=stars&order=desc&per_page=20&page=${page + 1}`,
+          true
+        );
+      }
+      setPage((prev) => prev + 1);
+    } catch (e) {
+      console.error("加载更多仓库失败:", e);
+    } finally {
+      setLoadingMore(false);
+    }
+  };
+
+  const fetchRepos = async (url: string, isLoadMore = false) => {
+    try {
+      if (!isLoadMore) {
+        setLoading(true);
+      }
       const res = await fetch(url, {
         // headers: {
         //   Authorization: `Bearer`,
@@ -96,17 +137,36 @@ const GitHubRepoSidebar = () => {
           : undefined,
       }));
 
-      setRepos(list);
+      // 如果是加载更多，则累积结果；否则重置结果
+      if (isLoadMore) {
+        setRepos((prev) => [...prev, ...list]);
+        // 如果返回的结果少于请求的数量，说明没有更多数据了
+        setHasMore(list.length === 20);
+      } else {
+        setRepos(list);
+        setHasMore(list.length === 20);
+        setPage(1);
+      }
     } catch (e) {
       console.error(e);
-      setRepos([]);
+      if (!isLoadMore) {
+        setRepos([]);
+      }
+      setHasMore(false);
     } finally {
-      setLoading(false);
+      if (!isLoadMore) {
+        setLoading(false);
+      }
     }
   };
 
   /* ====== 随机热门仓库（不重复的关键）====== */
   const fetchHotRepos = () => {
+    // 重置页码和加载更多状态
+    setPage(1);
+    setHasMore(true);
+    setRepos([]);
+    
     const days = Math.floor(Math.random() * 365) + 30;
     const d = new Date();
     d.setDate(d.getDate() - days);
@@ -123,6 +183,11 @@ const GitHubRepoSidebar = () => {
     if (!keyword.trim()) return;
 
     setMode("search");
+    // 重置页码和加载更多状态
+    setPage(1);
+    setHasMore(true);
+    setRepos([]);
+    
     fetchRepos(
       `https://api.github.com/search/repositories?q=${encodeURIComponent(
         keyword
@@ -130,12 +195,36 @@ const GitHubRepoSidebar = () => {
     );
   };
 
+  // 滚动监听，实现下拉加载更多
+  useEffect(() => {
+    if (!sidebarRef.current) return;
+
+    const handleScroll = () => {
+      if (loadingMore || !hasMore) return;
+
+      const element = sidebarRef.current;
+      const { scrollTop, scrollHeight, clientHeight } = element;
+
+      // 当滚动到底部附近（距离底部50px）时触发加载更多
+      if (scrollHeight - scrollTop - clientHeight < 50) {
+        loadMoreRepos();
+      }
+    };
+
+    const element = sidebarRef.current;
+    element.addEventListener('scroll', handleScroll);
+
+    return () => {
+      element.removeEventListener('scroll', handleScroll);
+    };
+  }, [loadingMore, hasMore]);
+
   useEffect(() => {
     fetchHotRepos();
   }, []);
 
   return (
-    <aside className="github-sidebar">
+    <aside className="github-sidebar" ref={sidebarRef}>
       <h2>GitHub 仓库</h2>
 
       <form onSubmit={handleSearch} className="github-search">
@@ -198,6 +287,13 @@ const GitHubRepoSidebar = () => {
               </div>
             </li>
           ))}
+          {/* 加载更多状态指示器 */}
+          {loadingMore && (
+            <li className="github-load-more">加载更多中...</li>
+          )}
+          {!hasMore && repos.length > 0 && (
+            <li className="github-no-more">没有更多数据了</li>
+          )}
         </ul>
       )}
     </aside>
