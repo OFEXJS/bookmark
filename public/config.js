@@ -1351,7 +1351,7 @@ const config = {
       icon: "https://algorithm-visualizer.org/favicon.png",
     },
     {
-      id: 192,
+      id: 193,
       title: 'UnoCSS',
       url: 'https://unocss.dev/',
       category: "文档",
