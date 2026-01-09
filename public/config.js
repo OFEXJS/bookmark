@@ -1319,7 +1319,7 @@ const config = {
         id: 188,
         title: 'UIverse',
         url: 'https://uiverse.io/',
-        category: "文档",
+        category: "UI",
         icon: "https://uiverse.io/favicon-32x32.png",
     },
     {
