@@ -27,6 +27,7 @@ interface Bookmark {
   category: string;
   icon?: string;
   bgColor?: string;
+  Mark?: boolean;
 }
 
 interface Wave {
@@ -442,13 +443,14 @@ const App: React.FC = () => {
 
   const categories = [
     "all",
+    'Mark',
     ...Array.from(new Set(bookmarks.map((b) => b.category))),
   ];
 
   const filteredBookmarks = bookmarks.filter((b) => {
     // 分类过滤
     const categoryMatch =
-      activeCategory === "all" || b.category === activeCategory;
+      activeCategory === "Mark" ? b.Mark === true : activeCategory === "all" || b.category === activeCategory;
     // 搜索过滤（忽略大小写的模糊搜索）
     const searchMatch =
       searchTerm === "" ||
@@ -691,6 +693,8 @@ const App: React.FC = () => {
             const count =
               category === "all"
                 ? bookmarks.length
+                : category === "Mark"
+                ? bookmarks.filter((b) => b.Mark === true).length
                 : bookmarks.filter((b) => b.category === category).length;
 
             return (
@@ -826,7 +830,7 @@ const App: React.FC = () => {
             }`}
           >
             {filteredBookmarks.length > 0 ? (
-              filteredBookmarks.map((b) => <BookmarkCard key={b.id} {...b} />)
+              filteredBookmarks.map((b, i) => <BookmarkCard key={i} {...b} />)
             ) : (
               <div className="empty-state">该分类下暂无书签</div>
             )}
