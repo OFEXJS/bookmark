@@ -469,6 +469,7 @@ const config = {
       url: "https://docs.python.org/zh-cn/3.9/c-api/index.html",
       category: "Python",
       icon: "https://docs.python.org/zh-cn/3.9/_static/py.svg",
+      Mark: true,
     },
     {
       title: "PyPI",
@@ -618,6 +619,7 @@ const config = {
       url: "https://leetcode.cn/",
       category: "社区",
       icon: "https://leetcode.cn/favicon.ico",
+      Mark: true,
     },
     {
       title: "Day.js",
@@ -1095,6 +1097,7 @@ const config = {
       url: "https://go.dev/learn/",
       category: "社区",
       icon: "https://go.dev/images/favicon-gopher.svg",
+      Mark: true,
     },
     {
       title: "易语言",
